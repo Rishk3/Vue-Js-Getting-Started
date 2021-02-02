@@ -1,7 +1,33 @@
 @import "_variables.scss";
+@import "_default.scss";
 body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  min-height: 100vh;
+}
+.flex {
+  display: flex;
+}
+.space-between {
+  justify-content: space-between;
+}
+.grid {
+  display: grid;
+}
+.justify-center {
+  justify-content: center;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
+  padding: 0;
+}
+
+.bkr {
+  background-color: red;
 }
