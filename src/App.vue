@@ -1,13 +1,41 @@
 <template>
   <div id="nav">
     <router-link to="/">Home</router-link>
-    <router-link to="/about">MyTodoList</router-link>
     <router-link to="/weather">GetWeather</router-link>
     <router-link to="/login">Login</router-link>
+    <router-link to="/register">Register</router-link>
+    <router-link to="/dashboard">Dashboard</router-link>
+    <button @click="changeToDark">Dark Theme</button>
+    <button @click="changeToLight">Light Theme</button>
   </div>
+
   <router-view />
 </template>
+<script>
+import { ref } from "vue";
+import { useStore } from "vuex";
+import { key } from "./store";
+export default {
+  setup() {
+    const store = useStore(key); //assiging store
 
+    const changeToDark = () => {
+      store.dispatch("changeTheme", {
+        theme: "dark",
+      });
+      console.log("store data", store.state.theme);
+    };
+    const changeToLight = () => {
+      store.dispatch("changeTheme", {
+        theme: "light",
+      });
+      console.log("store data", store.state.theme);
+    };
+
+    return { changeToDark, changeToLight };
+  },
+};
+</script>
 <style lang="scss">
 #app {
   font-family: poppins, Arial, sans-serif;

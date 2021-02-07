@@ -5,20 +5,35 @@
       <!-- social icons -->
       <SocialIcons />
       <p class="pb-1 text-center border-bottom-gray">
-        Don't Have Account? Click <router-link to="/">Sign Up</router-link> to
-        registration
+        Don't Have Account? Click
+        <router-link to="/register">Sign Up</router-link> to registration
       </p>
 
+      <div v-if="isLogging">Im logging wait</div>
       <!-- input section -->
       <section class="mt-3 mb-2">
-        <form>
+        <form action="#" @submit.prevent="logWithEmail">
           <div class="login_input">
             <div class="flex ">
               <div class="input_icon">
                 <i class="fa fa-envelope" aria-hidden="true"></i>
               </div>
               <div class="input_box bkr ">
-                <input type="email" required />
+                <input
+                  id="email"
+                  type="email"
+                  v-bind:class="{ 'error-border': emailError != null }"
+                  @click="
+                    {
+                      emailError = null;
+                    }
+                  "
+                  name="email"
+                  value
+                  required
+                  autofocus
+                  v-model="email"
+                />
               </div>
             </div>
             <div class="flex mt-2">
@@ -26,14 +41,36 @@
                 <i class="fa fa-key" aria-hidden="true"></i>
               </div>
               <div class="input_box">
-                <input type="password" required />
+                <input
+                  id="password"
+                  type="password"
+                  class="form-control"
+                  name="password"
+                  v-bind:class="{ 'error-border': passError != null }"
+                  @click="
+                    {
+                      passError = null;
+                    }
+                  "
+                  required
+                  v-model="password"
+                />
               </div>
             </div>
+            <div v-if="emailError" class="error-msg">
+              {{ emailError }}
+            </div>
+            <div v-if="passError" class="error-msg">
+              {{ passError }}
+            </div>
             <div class="m-1 mb-2 sign_check_box">
-              <input type="checkbox" />
+              <input type="checkbox" v-model="alwaysLogin" />
               <label for="vehicle1"> Always stay signed in</label>
             </div>
-            <button class="login_btn" type="submit">Log In</button>
+            <button class="login_btn" type="submit">
+              <div v-if="isLogging">⌛</div>
+              <div v-else>Log In</div>
+            </button>
           </div>
         </form>
       </section>
@@ -54,6 +91,74 @@
   </div>
 </template>
 
+<script lang="ts">
+import SocialIcons from "./SocialIcons.vue";
+import { auth } from "../../utilities/firebaseConfig";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
+import { key, State } from "@/store";
+
+export default {
+  components: {
+    SocialIcons,
+  },
+  setup() {
+    const store = useStore<State>(key);
+    const email = ref("");
+    const alwaysLogin = ref(false);
+    const password = ref("");
+    const emailError = ref(null);
+    const passError = ref(null);
+    const isLogging = ref(false); // for loading logiing Animations
+    const router = useRouter();
+
+    const login = (data: any) => {
+      store.dispatch("login", {
+        authUser: data,
+      });
+    };
+
+    const logWithEmail = () => {
+      console.log("im checked", alwaysLogin.value);
+      isLogging.value = true;
+      auth
+        .signInWithEmailAndPassword(email.value, password.value)
+        .then((data) => {
+          console.log("successfull login", data);
+          if (alwaysLogin.value) {
+            //if  always signin true store user in localStorage
+            localStorage.setItem("user", JSON.stringify(data));
+          }
+          login(data);
+          isLogging.value = false;
+        })
+        .then(() => {
+          router.push("/dashboard");
+        })
+        .catch((err) => {
+          if (err.message.includes("There is no user record")) {
+            emailError.value = err.message;
+            passError.value = null;
+          } else {
+            passError.value = err.message;
+            emailError.value = null;
+          }
+          isLogging.value = false;
+        });
+    };
+    return {
+      email,
+      password,
+      alwaysLogin,
+      emailError,
+      passError,
+      logWithEmail,
+      isLogging,
+    };
+  },
+};
+</script>
 <style scoped lang="scss">
 .login_comp {
   display: grid;
@@ -76,6 +181,9 @@
     border: 1px solid $border-gray;
     border-left: none;
   }
+  .error-border {
+    border: 1px solid $danger;
+  }
 }
 
 .input_icon {
@@ -96,17 +204,8 @@
   padding: 10px 0px;
   background-color: #75be33;
   border: none;
+  cursor: pointer;
   font-size: 1.2em;
   color: white;
 }
 </style>
-
-<script lang="ts">
-import SocialIcons from "./SocialIcons.vue";
-
-export default {
-  components: {
-    SocialIcons,
-  },
-};
-</script>

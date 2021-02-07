@@ -29,5 +29,9 @@ p {
 }
 
 .bkr {
-  background-color: red;
+  background-color: $danger;
+}
+.error-msg {
+  color: $danger;
+  font-size: 10px;
 }
