@@ -1,11 +1,10 @@
 <template>
   <div id="nav">
-    <router-link to="/">Home</router-link>
-    <router-link to="/login">Login</router-link>
+    <router-link to="/">Login</router-link>
     <router-link to="/register">Register</router-link>
     <router-link to="/dashboard">Dashboard</router-link>
-    <button @click="changeToDark">Dark Theme</button>
-    <button @click="changeToLight">Light Theme</button>
+    <!-- <button @click="changeToDark">Dark Theme</button>
+    <button @click="changeToLight">Light Theme</button> -->
   </div>
 
   <router-view />

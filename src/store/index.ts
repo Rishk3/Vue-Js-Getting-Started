@@ -1,4 +1,3 @@
-import { Options } from "vue-class-component";
 import { InjectionKey } from "vue";
 import { createStore, Store } from "vuex";
 
