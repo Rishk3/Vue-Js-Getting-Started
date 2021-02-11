@@ -1,6 +1,6 @@
 import { InjectionKey } from "vue";
-import { createStore, Store } from "vuex";
-
+import { createStore, GetterTree, Store } from "vuex";
+import firebase from "firebase";
 export interface State {
   count: number;
   authUser: any;
@@ -23,17 +23,21 @@ export const store = createStore<State>({
       state.count += value;
     },
     SET_LOGIN(state: State, payload: any) {
-      state.authUser = payload.user;
+      console.log("login mutation", payload);
+      state.authUser = payload;
     },
-    SET_THEME(state: State, payload: string) {
-      state.theme = payload;
+    SET_THEME(state: State, theme: string) {
+      state.theme = theme;
+    },
+    SET_LOGOUT(state: State) {
+      state.authUser = {};
     },
   },
   getters: {
-    displayUser(state: State) {
+    displayUser(state: State): State {
       return state.authUser;
     },
-    currentTheme(state: State) {
+    currentTheme(state: State): string {
       return state.theme;
     },
   },
@@ -42,9 +46,14 @@ export const store = createStore<State>({
       console.log("store action", payload);
       await commit("SET_LOGIN", payload);
     },
-    changeTheme({ commit }, payload): void {
-      console.log("store action::", payload);
-      commit("SET_THEME", payload);
+    async logout({ commit }) {
+      console.log("logging user");
+      await commit("SET_LOGOUT");
+    },
+    changeTheme({ commit }, payload: State): void {
+      commit("SET_THEME", payload.theme);
     },
   },
+
+  modules: {},
 });

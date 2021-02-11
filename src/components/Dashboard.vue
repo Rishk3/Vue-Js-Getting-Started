@@ -19,36 +19,32 @@
   </div>
 </template>
 
-<script>
-import { ref } from "vue";
-import { auth } from "../utilities/firebaseConfig.ts";
-import { useRouter } from "vue-router";
+<script lang="ts">
+import { computed, onMounted, ref, watch } from "vue";
+import { auth } from "../utilities/firebaseConfig";
+import { Router, useRouter } from "vue-router";
 import { useStore } from "vuex";
-import { key } from "@/store";
+import { key, State } from "@/store";
 export default {
   setup() {
-    const store = useStore(key);
-    const router = useRouter();
-    const userName = ref("");
-    const storeUser = store.getters.displayUser;
+    const store = useStore<State>(key);
+    const router: Router = useRouter();
+    const userName = ref<string>("");
 
-    //check the store
-    if (storeUser) {
-      userName.value = storeUser.user.email;
-      console.log("store user", storeUser);
-    } else {
-      console.error("store user", storeUser);
-      // router.push("/login");
-    }
+    onMounted(() => {
+      if (store.state.authUser != null) {
+        userName.value = store.state.authUser.user.displayName;
+      }
+    });
 
     const logOut = () => {
       console.log("sining Out");
       auth
         .signOut()
         .then(() => {
-          userName.value = "";
+          store.dispatch("logout");
           localStorage.removeItem("user");
-          router.push("/login");
+          router.push("/");
         })
         .catch((error) => {
           console.error(error);
