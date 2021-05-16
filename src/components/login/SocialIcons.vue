@@ -2,9 +2,7 @@
   <div v-if="!isloggedIn" class="m-1 flex justify-center login_social_icons">
     <div class="icon"><i class="fa fa-facebook"></i></div>
     <div class="icon"><i class="fa fa-twitter"></i></div>
-    <div class="icon" v-on:click="googleSignIn">
-      <i class="fa fa-google-plus"></i>
-    </div>
+ 
     <div class="icon"><i class="fa fa-linkedin"></i></div>
   </div>
 </template>
